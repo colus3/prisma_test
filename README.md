@@ -1,6 +1,6 @@
 # Prisma ORM Study Project
 
-NestJS + Prisma + MySQL 기반의 User CRUD API 스터디 프로젝트입니다.
+NestJS + Prisma + MySQL 기반의 CRUD API 스터디 프로젝트입니다.
 
 ## 기술 스택
 
@@ -16,23 +16,30 @@ NestJS + Prisma + MySQL 기반의 User CRUD API 스터디 프로젝트입니다.
 ```
 prisma_test/
 ├── compose.yml               # MySQL Docker Compose 설정
-├── .env                      # 환경 변수 (DATABASE_URL)
+├── .env                      # 환경 변수 (DATABASE_URL, PORT)
 ├── prisma/
-│   ├── schema.prisma         # Prisma 스키마 (User 모델)
+│   ├── schema.prisma         # Prisma 스키마 (User, Product 모델)
 │   └── migrations/           # 마이그레이션 히스토리
 └── src/
-    ├── main.ts               # 앱 진입점 (port 3000)
+    ├── main.ts               # 앱 진입점 (port 3100)
     ├── app.module.ts         # 루트 모듈
     ├── prisma/
     │   ├── prisma.module.ts  # Global Prisma 모듈
     │   └── prisma.service.ts # PrismaClient 래퍼 서비스
-    └── users/
-        ├── users.module.ts
-        ├── users.controller.ts
-        ├── users.service.ts
+    ├── user/
+    │   ├── user.module.ts
+    │   ├── user.controller.ts
+    │   ├── user.service.ts
+    │   └── dto/
+    │       ├── create-user.dto.ts
+    │       └── update-user.dto.ts
+    └── product/
+        ├── product.module.ts
+        ├── product.controller.ts
+        ├── product.service.ts
         └── dto/
-            ├── create-user.dto.ts
-            └── update-user.dto.ts
+            ├── create-product.dto.ts
+            └── update-product.dto.ts
 ```
 
 ## 시작하기
@@ -54,6 +61,7 @@ npm install
 
 ```env
 DATABASE_URL="mysql://prisma:prisma1234@localhost:3306/prisma_test"
+PORT=3100
 ```
 
 ### 데이터베이스 실행
@@ -68,15 +76,13 @@ docker compose up -d
 npm run prisma:migrate
 ```
 
-> 최초 실행 시 migration 이름을 입력하라는 프롬프트가 뜨면 `init` 등 원하는 이름을 입력합니다.
-
 ### 개발 서버 실행
 
 ```bash
 npm run start:dev
 ```
 
-서버가 시작되면 `http://localhost:3000` 에서 접근 가능합니다.
+서버가 시작되면 `http://localhost:3100` 에서 접근 가능합니다.
 
 ## API 명세
 
@@ -90,27 +96,42 @@ npm run start:dev
 | `PATCH` | `/users/:id` | 사용자 수정 | `{ email?, name? }` |
 | `DELETE` | `/users/:id` | 사용자 삭제 | - |
 
+### Product
+
+| Method | Endpoint | 설명 | Body |
+|--------|----------|------|------|
+| `POST` | `/products` | 상품 생성 | `{ name, price }` |
+| `GET` | `/products` | 전체 상품 조회 | - |
+| `GET` | `/products/:id` | 단일 상품 조회 | - |
+| `PATCH` | `/products/:id` | 상품 수정 | `{ name?, price? }` |
+| `DELETE` | `/products/:id` | 상품 삭제 | - |
+
 ### 예시 요청
 
 ```bash
 # 사용자 생성
-curl -X POST http://localhost:3000/users \
+curl -X POST http://localhost:3100/users \
   -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","name":"Alice"}'
 
 # 전체 조회
-curl http://localhost:3000/users
+curl http://localhost:3100/users
 
 # 단일 조회
-curl http://localhost:3000/users/1
+curl http://localhost:3100/users/1
 
 # 수정
-curl -X PATCH http://localhost:3000/users/1 \
+curl -X PATCH http://localhost:3100/users/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice Updated"}'
 
 # 삭제
-curl -X DELETE http://localhost:3000/users/1
+curl -X DELETE http://localhost:3100/users/1
+
+# 상품 생성
+curl -X POST http://localhost:3100/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Apple","price":1500}'
 ```
 
 ### 응답 예시
@@ -153,7 +174,7 @@ docker compose down
 docker compose down -v
 ```
 
-## User 모델
+## 모델
 
 ```prisma
 model User {
@@ -164,5 +185,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
 }
 ```

@@ -4,7 +4,7 @@ Claude Code가 이 프로젝트를 수정할 때 참고하는 가이드입니다
 
 ## 프로젝트 개요
 
-NestJS + Prisma + MySQL 기반의 User CRUD API 스터디 프로젝트.
+NestJS + Prisma + MySQL 기반의 CRUD API 스터디 프로젝트 (User, Product).
 ORM 학습 목적이므로 코드는 간결하고 명확하게 유지한다.
 
 ## 기술 스택
@@ -15,6 +15,8 @@ ORM 학습 목적이므로 코드는 간결하고 명확하게 유지한다.
 
 ### 모듈 구조
 - 기능 단위로 모듈을 분리한다: `src/<feature>/<feature>.module.ts`
+- 디렉토리명과 파일명은 **단수**를 사용한다: `src/user/`, `src/product/`
+- REST 라우트는 복수를 사용한다: `@Controller('users')`, `@Controller('products')`
 - `PrismaModule`은 `@Global()`로 선언되어 있으므로 각 기능 모듈에서 별도 import 불필요
 - 새 기능 추가 시 `app.module.ts`의 `imports`에 해당 모듈을 등록한다
 
