@@ -14,7 +14,7 @@ ORM 학습 목적이므로 코드는 간결하고 명확하게 유지한다.
 ## 아키텍처 규칙
 
 ### 모듈 구조
-- 기능 단위로 모듈을 분리한다: `src/<feature>/<feature>.module.ts`
+- 기능 단위로 모듈을 분리한다: `src/<feature>/<featurea>.module.ts`
 - 디렉토리명과 파일명은 **단수**를 사용한다: `src/user/`, `src/product/`
 - REST 라우트는 복수를 사용한다: `@Controller('users')`, `@Controller('products')`
 - `PrismaModule`은 `@Global()`로 선언되어 있으므로 각 기능 모듈에서 별도 import 불필요
